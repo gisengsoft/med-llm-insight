@@ -94,8 +94,8 @@ export default function Index() {
             <p className="font-medium">© 2025 Gilson Inácio da Silva — Medical LLM Evaluation Project</p>
           </div>
           <div className="flex gap-5 text-[11px] uppercase tracking-wider">
-            <span>Repository: <em className="text-foreground/40 not-italic">placeholder</em></span>
-            <span>Report: <em className="text-foreground/40 not-italic">placeholder</em></span>
+            <a href="https://github.com/gis45ufs/Top-Avanc-EngSoft-SI-I-26-1-Gilson-Inacio-Silva-Med-Ativ1" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Repository ↗</a>
+            <a href="https://github.com/gis45ufs/Top-Avanc-EngSoft-SI-I-26-1-Gilson-Inacio-Silva-Med-Ativ1/blob/main/relatorio/Relatorio_Individual_Gilson_Inacio_Silva_Atividade1.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Report ↗</a>
           </div>
         </div>
       </footer>

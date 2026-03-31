@@ -1,11 +1,41 @@
 import { useState } from "react";
-import { Search, ChevronDown, ChevronUp, Stethoscope, BookOpen, CheckCircle2, Star } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Stethoscope, BookOpen, CheckCircle2, Star, ExternalLink } from "lucide-react";
 import { useCuradoriaAbertas, useRespostasLLMs, useAvaliacaoLLMs } from "@/hooks/useData";
 import { DIMENSIONS, MODEL_COLORS, type AvaliacaoLLM } from "@/lib/dataUtils";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+
+/** Attempt to render text that looks like a URL as a clickable link */
+function RichText({ text }: { text: string }) {
+  if (!text) return null;
+  // Split by whitespace and newlines, render URLs as links
+  const urlRegex = /(https?:\/\/[^\s,;)]+)/g;
+  const parts = text.split(urlRegex);
+  return (
+    <span>
+      {parts.map((part, i) =>
+        urlRegex.test(part) ? (
+          <a
+            key={i}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-primary hover:text-primary/80 underline underline-offset-2 break-all"
+          >
+            <ExternalLink className="h-3 w-3 shrink-0 inline" strokeWidth={2} />
+            <span className="break-all">{(() => {
+              try { return new URL(part).hostname + '…'; } catch { return part.length > 50 ? part.slice(0, 50) + '…' : part; }
+            })()}</span>
+          </a>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </span>
+  );
+}
 
 export default function OpenQuestionsSection() {
   const { data: abertas, isLoading: l1 } = useCuradoriaAbertas();
@@ -79,36 +109,34 @@ export default function OpenQuestionsSection() {
 
               {isOpen && (
                 <div className="mt-6 border-t border-border pt-6 space-y-8">
-                  {/* Reference section - compact two-column grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                    <div className="space-y-4">
+                  {/* Reference section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                    <div className="space-y-5">
                       <DetailBlock label="Gold Answer" text={q.gold_answer} icon={<BookOpen className="h-3.5 w-3.5" />} />
-                      <DetailBlock label="Sources" text={q.sources} />
-                      <DetailBlock label="Reference" text={q.reference_used} />
+                      <DetailBlock label="Sources" text={q.sources} icon={<ExternalLink className="h-3.5 w-3.5" />} rich />
+                      <DetailBlock label="Reference" text={q.reference_used} rich />
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                       <DetailBlock label="Must Have" text={q.must_have} icon={<CheckCircle2 className="h-3.5 w-3.5" />} />
                       <DetailBlock label="Nice to Have" text={q.nice_to_have} icon={<Star className="h-3.5 w-3.5" />} />
                       <DetailBlock label="Curator Notes" text={q.curator_notes} />
                     </div>
                   </div>
 
-                  {/* Combined model answers + scores side by side */}
+                  {/* Model answers + scores */}
                   {models.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Model Responses & Scores</h4>
+                      <h4 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-4">Model Responses & Scores</h4>
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         {models.map((m, i) => {
                           const ev = evals.find(e => e.model_name === m.name);
-                          return (
-                            <ModelColumn key={i} name={m.name} answer={m.answer} evaluation={ev} />
-                          );
+                          return <ModelColumn key={i} name={m.name} answer={m.answer} evaluation={ev} />;
                         })}
                       </div>
                       {resposta?.observations && (
                         <div className="mt-4 rounded-lg bg-muted/30 border border-border p-4">
-                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Observations</p>
-                          <p className="text-sm text-foreground/80 leading-relaxed">{resposta.observations}</p>
+                          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">Observations</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{resposta.observations}</p>
                         </div>
                       )}
                     </div>
@@ -129,26 +157,19 @@ function ModelColumn({ name, answer, evaluation }: { name: string; answer: strin
 
   return (
     <div className="rounded-xl border border-border overflow-hidden bg-card flex flex-col">
-      {/* Model header with colored accent */}
       <div className="px-4 py-3 border-b border-border flex items-center justify-between" style={{ borderTopWidth: 3, borderTopColor: color }}>
         <span className="text-sm font-bold" style={{ color }}>{name}</span>
         {evaluation && (
-          <span
-            className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-md ${
-              score <= 8 ? "bg-warning/15 text-warning" : "bg-success/15 text-success"
-            }`}
-          >
+          <span className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-md ${score <= 8 ? "bg-warning/[0.15] text-warning" : "bg-success/[0.15] text-success"}`}>
             {score}/10
           </span>
         )}
       </div>
 
-      {/* Answer */}
       <div className="px-4 py-3 flex-1">
         <p className="text-xs text-foreground/80 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed scrollbar-hide">{answer}</p>
       </div>
 
-      {/* Rubric scores */}
       {evaluation && (
         <div className="px-4 py-3 border-t border-border bg-muted/20 space-y-2">
           {DIMENSIONS.map(d => {
@@ -173,15 +194,17 @@ function ModelColumn({ name, answer, evaluation }: { name: string; answer: strin
   );
 }
 
-function DetailBlock({ label, text, icon }: { label: string; text: string; icon?: React.ReactNode }) {
+function DetailBlock({ label, text, icon, rich }: { label: string; text: string; icon?: React.ReactNode; rich?: boolean }) {
   if (!text) return null;
   return (
-    <div>
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+    <div className="min-w-0">
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
         {icon}
         {label}
       </p>
-      <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{text}</p>
+      <div className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed break-words">
+        {rich ? <RichText text={text} /> : text}
+      </div>
     </div>
   );
 }
