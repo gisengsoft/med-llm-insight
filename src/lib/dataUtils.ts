@@ -152,7 +152,7 @@ export async function loadAvaliacaoLLMs(): Promise<AvaliacaoLLM[]> {
 }
 
 export async function loadCuradoriaAbertas(): Promise<CuradoriaAberta[]> {
-  const text = await fetch("/data/curadoria_abertas.csv").then(r => r.text());
+  const text = await fetchLatin1("/data/curadoria_abertas.csv");
   return parseCSV(text, (_, v) => ({
     official_id: parseInt(v[0]) || 0,
     student: v[1] || "",
