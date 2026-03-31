@@ -10,6 +10,7 @@ import FilesSection from "@/components/FilesSection";
 const tabs = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "open", label: "Open Questions", icon: MessageSquareText },
+  { id: "notable", label: "Notable Cases", icon: AlertTriangle },
   { id: "comparison", label: "Model Comparison", icon: GitCompare },
   { id: "mc", label: "Multiple Choice", icon: ListChecks },
   { id: "files", label: "Files / Reports", icon: FolderDown },
