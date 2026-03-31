@@ -11,7 +11,7 @@ export default function MCCurationSection() {
   const [difficultyFilter, setDifficultyFilter] = useState<string>("");
 
   if (isLoading) {
-    return <div className="flex items-center justify-center py-20"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
+    return <div className="flex items-center justify-center py-24"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" /></div>;
   }
 
   const difficulties = [...new Set(mcData?.map(q => q.difficulty).filter(Boolean) || [])];
@@ -29,28 +29,28 @@ export default function MCCurationSection() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by ID, question, or specialty..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10" />
+          <Input placeholder="Search by ID, question, or specialty..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 h-11 bg-card" />
         </div>
         <select
           value={difficultyFilter}
           onChange={e => setDifficultyFilter(e.target.value)}
-          className="rounded-md border border-input bg-card px-3 py-2 text-sm text-foreground"
+          className="rounded-lg border border-input bg-card px-4 py-2.5 text-sm text-foreground transition-colors hover:border-primary/30 focus:outline-none focus:ring-2 focus:ring-ring"
         >
           <option value="">All Difficulties</option>
           {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
         </select>
       </div>
 
-      <p className="text-sm text-muted-foreground">{filtered.length} question{filtered.length !== 1 ? "s" : ""} found</p>
+      <p className="text-sm text-muted-foreground font-medium">{filtered.length} question{filtered.length !== 1 ? "s" : ""} found</p>
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-40" />
-          <p>No questions match your filters.</p>
+        <div className="text-center py-16 text-muted-foreground">
+          <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-30" />
+          <p className="text-sm">No questions match your filters.</p>
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {filtered.map(q => {
           const isOpen = expandedId === q.official_id;
           const options = [
@@ -71,34 +71,36 @@ export default function MCCurationSection() {
             <div key={q.official_id} className="chart-container overflow-hidden">
               <button
                 onClick={() => setExpandedId(isOpen ? null : q.official_id)}
-                className="w-full flex items-start justify-between gap-3 text-left"
+                className="w-full flex items-start justify-between gap-4 text-left group"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-sm font-semibold text-primary">#{q.official_id}</span>
-                    <Badge variant="secondary" className="text-xs">{q.specialty || "N/A"}</Badge>
+                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                    <span className="text-sm font-bold text-primary">#{q.official_id}</span>
+                    <Badge variant="secondary" className="text-xs font-medium">{q.specialty || "N/A"}</Badge>
                     <Badge variant="outline" className="text-xs">{q.difficulty || "N/A"}</Badge>
-                    <Badge className="text-xs bg-success text-success-foreground">Answer: {correctAnswer}</Badge>
+                    <Badge className="text-xs bg-success text-success-foreground font-semibold">Answer: {correctAnswer}</Badge>
                   </div>
-                  <p className="text-sm text-foreground line-clamp-2">{q.question}</p>
+                  <p className="text-sm text-foreground/90 line-clamp-2 leading-relaxed">{q.question}</p>
                 </div>
-                {isOpen ? <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0 mt-1" /> : <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />}
+                <div className="shrink-0 mt-1 p-1 rounded-md group-hover:bg-muted transition-colors">
+                  {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+                </div>
               </button>
 
               {isOpen && (
-                <div className="mt-4 space-y-4 border-t border-border pt-4">
+                <div className="mt-5 space-y-5 border-t border-border pt-5">
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Full Question</p>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">{q.question}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Full Question</p>
+                    <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.question}</p>
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Options</p>
-                    <div className="space-y-1.5">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Options</p>
+                    <div className="space-y-2">
                       {options.map(o => (
-                        <div key={o.letter} className={`flex gap-2 text-sm rounded-md px-3 py-2 ${o.letter === correctAnswer ? "bg-success/10 border border-success/30" : "bg-muted/30"}`}>
-                          <span className={`font-semibold shrink-0 ${o.letter === correctAnswer ? "text-success" : "text-muted-foreground"}`}>{o.letter}.</span>
-                          <span className="text-foreground">{o.text}</span>
+                        <div key={o.letter} className={`flex gap-3 text-sm rounded-lg px-4 py-2.5 transition-colors ${o.letter === correctAnswer ? "bg-success/8 border border-success/25 ring-1 ring-success/10" : "bg-muted/30 border border-transparent"}`}>
+                          <span className={`font-bold shrink-0 ${o.letter === correctAnswer ? "text-success" : "text-muted-foreground"}`}>{o.letter}.</span>
+                          <span className="text-foreground/85">{o.text}</span>
                         </div>
                       ))}
                     </div>
@@ -106,20 +108,20 @@ export default function MCCurationSection() {
 
                   {q.explanation && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Explanation</p>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{q.explanation}</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Explanation</p>
+                      <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.explanation}</p>
                     </div>
                   )}
                   {q.reference_used && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Reference</p>
-                      <p className="text-sm text-foreground">{q.reference_used}</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Reference</p>
+                      <p className="text-sm text-foreground/85">{q.reference_used}</p>
                     </div>
                   )}
                   {q.curator_notes && (
                     <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Curator Notes</p>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">{q.curator_notes}</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Curator Notes</p>
+                      <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.curator_notes}</p>
                     </div>
                   )}
                 </div>

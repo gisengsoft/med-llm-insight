@@ -1,4 +1,4 @@
-import { FileDown, FileText, Table, FileSpreadsheet } from "lucide-react";
+import { FileDown, FileText, Table, FileSpreadsheet, ExternalLink } from "lucide-react";
 
 const files = [
   { name: "Workbook (.xlsx)", icon: FileSpreadsheet, desc: "Complete evaluation workbook with all data sheets", placeholder: true },
@@ -12,24 +12,24 @@ const files = [
 
 export default function FilesSection() {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       <p className="text-sm text-muted-foreground">Download data files and reports generated during this evaluation project.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {files.map(f => {
           const Icon = f.icon;
           return (
-            <div key={f.name} className="chart-container flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <div key={f.name} className="chart-container flex items-start gap-4 group">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary group-hover:bg-primary/15 transition-colors">
                 <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-foreground">{f.name}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{f.desc}</p>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{f.desc}</p>
                 {f.placeholder ? (
-                  <span className="inline-block mt-2 text-xs text-muted-foreground italic">Coming soon</span>
+                  <span className="inline-block mt-2.5 text-xs text-muted-foreground/60 italic">Coming soon</span>
                 ) : (
-                  <a href={f.href} download className="inline-block mt-2 text-xs font-medium text-primary hover:underline">
+                  <a href={f.href} download className="inline-flex items-center gap-1 mt-2.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors">
                     Download ↓
                   </a>
                 )}
@@ -40,10 +40,16 @@ export default function FilesSection() {
       </div>
 
       <div className="chart-container">
-        <h3 className="text-sm font-semibold text-foreground mb-2">External Links</h3>
-        <div className="space-y-1 text-sm">
-          <p className="text-muted-foreground">📁 Repository: <span className="italic">Link placeholder</span></p>
-          <p className="text-muted-foreground">📄 Full Report: <span className="italic">Link placeholder</span></p>
+        <h3 className="text-sm font-semibold text-foreground mb-3">External Links</h3>
+        <div className="space-y-2 text-sm">
+          <a href="#" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Repository — <em className="text-foreground/40">Link placeholder</em></span>
+          </a>
+          <a href="#" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Full Report — <em className="text-foreground/40">Link placeholder</em></span>
+          </a>
         </div>
       </div>
     </div>
