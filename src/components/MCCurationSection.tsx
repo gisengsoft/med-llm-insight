@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, BookOpen, CheckCircle, ListChecks } from "lucide-react";
 import { useCuradoriaMC } from "@/hooks/useData";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +26,11 @@ export default function MCCurationSection() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center gap-2.5 mb-2">
+        <ListChecks className="h-5 w-5 text-primary/70" strokeWidth={1.7} />
+        <h2 className="section-title text-xl">Multiple Choice Curation</h2>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -41,11 +46,11 @@ export default function MCCurationSection() {
         </select>
       </div>
 
-      <p className="text-sm text-muted-foreground font-medium">{filtered.length} question{filtered.length !== 1 ? "s" : ""} found</p>
+      <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{filtered.length} question{filtered.length !== 1 ? "s" : ""} found</p>
 
       {filtered.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
-          <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-30" />
+          <BookOpen className="h-10 w-10 mx-auto mb-4 opacity-25" strokeWidth={1.5} />
           <p className="text-sm">No questions match your filters.</p>
         </div>
       )}
@@ -75,10 +80,13 @@ export default function MCCurationSection() {
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span className="text-sm font-bold text-primary">#{q.official_id}</span>
-                    <Badge variant="secondary" className="text-xs font-medium">{q.specialty || "N/A"}</Badge>
-                    <Badge variant="outline" className="text-xs">{q.difficulty || "N/A"}</Badge>
-                    <Badge className="text-xs bg-success text-success-foreground font-semibold">Answer: {correctAnswer}</Badge>
+                    <span className="text-sm font-bold text-primary tabular-nums">#{q.official_id}</span>
+                    <Badge variant="secondary" className="text-[11px] font-medium">{q.specialty || "N/A"}</Badge>
+                    <Badge variant="outline" className="text-[11px]">{q.difficulty || "N/A"}</Badge>
+                    <Badge className="text-[11px] bg-success/12 text-success border-success/25 font-semibold">
+                      <CheckCircle className="h-3 w-3 mr-1" strokeWidth={2} />
+                      {correctAnswer}
+                    </Badge>
                   </div>
                   <p className="text-sm text-foreground/90 line-clamp-2 leading-relaxed">{q.question}</p>
                 </div>
@@ -90,40 +98,26 @@ export default function MCCurationSection() {
               {isOpen && (
                 <div className="mt-5 space-y-5 border-t border-border pt-5">
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Full Question</p>
+                    <FieldLabel text="Full Question" />
                     <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.question}</p>
                   </div>
 
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Options</p>
-                    <div className="space-y-2">
+                    <FieldLabel text="Answer Options" />
+                    <div className="space-y-1.5">
                       {options.map(o => (
-                        <div key={o.letter} className={`flex gap-3 text-sm rounded-lg px-4 py-2.5 transition-colors ${o.letter === correctAnswer ? "bg-success/8 border border-success/25 ring-1 ring-success/10" : "bg-muted/30 border border-transparent"}`}>
-                          <span className={`font-bold shrink-0 ${o.letter === correctAnswer ? "text-success" : "text-muted-foreground"}`}>{o.letter}.</span>
+                        <div key={o.letter} className={`flex gap-3 text-sm rounded-lg px-4 py-2.5 transition-colors ${o.letter === correctAnswer ? "bg-success/6 border border-success/20" : "bg-muted/20 border border-transparent"}`}>
+                          <span className={`font-bold shrink-0 tabular-nums ${o.letter === correctAnswer ? "text-success" : "text-muted-foreground"}`}>{o.letter}.</span>
                           <span className="text-foreground/85">{o.text}</span>
+                          {o.letter === correctAnswer && <CheckCircle className="h-4 w-4 text-success shrink-0 ml-auto self-center" strokeWidth={1.8} />}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {q.explanation && (
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Explanation</p>
-                      <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.explanation}</p>
-                    </div>
-                  )}
-                  {q.reference_used && (
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Reference</p>
-                      <p className="text-sm text-foreground/85">{q.reference_used}</p>
-                    </div>
-                  )}
-                  {q.curator_notes && (
-                    <div>
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Curator Notes</p>
-                      <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.curator_notes}</p>
-                    </div>
-                  )}
+                  {q.explanation && <div><FieldLabel text="Explanation" /><p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.explanation}</p></div>}
+                  {q.reference_used && <div><FieldLabel text="Reference" /><p className="text-sm text-foreground/85">{q.reference_used}</p></div>}
+                  {q.curator_notes && <div><FieldLabel text="Curator Notes" /><p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{q.curator_notes}</p></div>}
                 </div>
               )}
             </div>
@@ -132,4 +126,8 @@ export default function MCCurationSection() {
       </div>
     </div>
   );
+}
+
+function FieldLabel({ text }: { text: string }) {
+  return <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">{text}</p>;
 }
