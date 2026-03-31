@@ -200,7 +200,7 @@ export async function loadCuradoriaMC(): Promise<CuradoriaMC[]> {
 }
 
 export async function loadRespostasLLMs(): Promise<RespostaLLM[]> {
-  const text = await fetch("/data/respostas_llms.csv").then(r => r.text());
+  const text = await fetchLatin1("/data/respostas_llms.csv");
   return parseCSV(text, (_, v) => ({
     official_id: parseInt(v[0]) || 0,
     student: v[1] || "",
