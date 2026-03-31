@@ -78,6 +78,7 @@ export default function Index() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {activeTab === "overview" && <OverviewSection />}
         {activeTab === "open" && <OpenQuestionsSection />}
+        {activeTab === "notable" && <NotableCasesSection />}
         {activeTab === "comparison" && <ModelComparisonSection />}
         {activeTab === "mc" && <MCCurationSection />}
         {activeTab === "files" && <FilesSection />}
