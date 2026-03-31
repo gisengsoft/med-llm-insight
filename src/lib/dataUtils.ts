@@ -128,8 +128,14 @@ function parseCSV<T>(text: string, mapper: (headers: string[], values: string[])
   return filtered.slice(1).map(line => mapper(headers, parseCSVLine(line)));
 }
 
+async function fetchLatin1(url: string): Promise<string> {
+  const response = await fetch(url);
+  const buffer = await response.arrayBuffer();
+  return new TextDecoder("iso-8859-1").decode(buffer);
+}
+
 export async function loadAvaliacaoLLMs(): Promise<AvaliacaoLLM[]> {
-  const text = await fetch("/data/avaliacao_llms.csv").then(r => r.text());
+  const text = await fetchLatin1("/data/avaliacao_llms.csv");
   return parseCSV(text, (_, v) => ({
     official_id: parseInt(v[0]) || 0,
     student: v[1] || "",
