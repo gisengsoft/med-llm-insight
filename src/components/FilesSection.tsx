@@ -81,7 +81,7 @@ export default function FilesSection() {
               Watch the short presentation of this project.
             </p>
           </div>
-          <a href="https://youtu.be/QyZ2Ksk03dE" target="_blank" rel="noopener noreferrer">
+          <a href="https://youtu.be/AGzbBM3Vrac" target="_blank" rel="noopener noreferrer">
             <Button
               variant="outline"
               size="sm"
