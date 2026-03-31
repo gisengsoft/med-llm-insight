@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { LayoutDashboard, MessageSquareText, GitCompare, ListChecks, FolderDown, ShieldAlert, Activity } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, GitCompare, ListChecks, FolderDown, ShieldAlert, Activity, AlertTriangle } from "lucide-react";
 import OverviewSection from "@/components/OverviewSection";
+import NotableCasesSection from "@/components/NotableCasesSection";
 import OpenQuestionsSection from "@/components/OpenQuestionsSection";
 import ModelComparisonSection from "@/components/ModelComparisonSection";
 import MCCurationSection from "@/components/MCCurationSection";
@@ -9,6 +10,7 @@ import FilesSection from "@/components/FilesSection";
 const tabs = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "open", label: "Open Questions", icon: MessageSquareText },
+  { id: "notable", label: "Notable Cases", icon: AlertTriangle },
   { id: "comparison", label: "Model Comparison", icon: GitCompare },
   { id: "mc", label: "Multiple Choice", icon: ListChecks },
   { id: "files", label: "Files / Reports", icon: FolderDown },
@@ -76,6 +78,7 @@ export default function Index() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {activeTab === "overview" && <OverviewSection />}
         {activeTab === "open" && <OpenQuestionsSection />}
+        {activeTab === "notable" && <NotableCasesSection />}
         {activeTab === "comparison" && <ModelComparisonSection />}
         {activeTab === "mc" && <MCCurationSection />}
         {activeTab === "files" && <FilesSection />}
