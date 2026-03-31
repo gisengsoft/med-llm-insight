@@ -81,15 +81,16 @@ export default function FilesSection() {
               Watch the short presentation of this project.
             </p>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
-            disabled
-          >
-            <Play className="h-3.5 w-3.5" strokeWidth={2} />
-            Video link coming soon
-          </Button>
+          <a href="https://youtu.be/QyZ2Ksk03dE" target="_blank" rel="noopener noreferrer">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 border-primary/30 text-primary hover:bg-primary hover:text-primary-foreground transition-all"
+            >
+              <Play className="h-3.5 w-3.5" strokeWidth={2} />
+              Watch Presentation Video
+            </Button>
+          </a>
         </div>
       </div>
 
