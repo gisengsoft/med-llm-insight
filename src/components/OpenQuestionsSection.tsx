@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Search, ChevronDown, ChevronUp, Stethoscope } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Stethoscope, BookOpen, CheckCircle2, Star } from "lucide-react";
 import { useCuradoriaAbertas, useRespostasLLMs, useAvaliacaoLLMs } from "@/hooks/useData";
-import { DIMENSIONS, MODEL_COLORS } from "@/lib/dataUtils";
+import { DIMENSIONS, MODEL_COLORS, type AvaliacaoLLM } from "@/lib/dataUtils";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 
 export default function OpenQuestionsSection() {
   const { data: abertas, isLoading: l1 } = useCuradoriaAbertas();
@@ -50,6 +52,12 @@ export default function OpenQuestionsSection() {
           const resposta = respostas?.find(r => r.official_id === q.official_id);
           const evals = avaliacoes?.filter(a => a.official_id === q.official_id) || [];
 
+          const models = resposta ? [
+            { name: resposta.model_1_name, answer: resposta.model_1_answer },
+            { name: resposta.model_2_name, answer: resposta.model_2_answer },
+            { name: resposta.model_3_name, answer: resposta.model_3_answer },
+          ] : [];
+
           return (
             <div key={q.official_id} className="chart-container overflow-hidden">
               <button
@@ -70,58 +78,39 @@ export default function OpenQuestionsSection() {
               </button>
 
               {isOpen && (
-                <div className="mt-6 space-y-6 border-t border-border pt-6">
-                  <div className="space-y-4">
-                    <DetailBlock label="Gold Answer" text={q.gold_answer} />
-                    <DetailBlock label="Must Have" text={q.must_have} />
-                    <DetailBlock label="Nice to Have" text={q.nice_to_have} />
-                    <DetailBlock label="Sources" text={q.sources} />
-                    <DetailBlock label="Reference" text={q.reference_used} />
-                    <DetailBlock label="Curator Notes" text={q.curator_notes} />
+                <div className="mt-6 border-t border-border pt-6 space-y-8">
+                  {/* Reference section - compact two-column grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="space-y-4">
+                      <DetailBlock label="Gold Answer" text={q.gold_answer} icon={<BookOpen className="h-3.5 w-3.5" />} />
+                      <DetailBlock label="Sources" text={q.sources} />
+                      <DetailBlock label="Reference" text={q.reference_used} />
+                    </div>
+                    <div className="space-y-4">
+                      <DetailBlock label="Must Have" text={q.must_have} icon={<CheckCircle2 className="h-3.5 w-3.5" />} />
+                      <DetailBlock label="Nice to Have" text={q.nice_to_have} icon={<Star className="h-3.5 w-3.5" />} />
+                      <DetailBlock label="Curator Notes" text={q.curator_notes} />
+                    </div>
                   </div>
 
-                  {resposta && (
+                  {/* Combined model answers + scores side by side */}
+                  {models.length > 0 && (
                     <div>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Model Answers</h4>
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                        {[
-                          { name: resposta.model_1_name, answer: resposta.model_1_answer },
-                          { name: resposta.model_2_name, answer: resposta.model_2_answer },
-                          { name: resposta.model_3_name, answer: resposta.model_3_answer },
-                        ].map((m, i) => (
-                          <div key={i} className="rounded-xl border border-border p-4 bg-muted/20">
-                            <p className="text-xs font-bold mb-2" style={{ color: MODEL_COLORS[m.name] || "#6b7280" }}>{m.name}</p>
-                            <p className="text-xs text-foreground/80 whitespace-pre-wrap max-h-52 overflow-y-auto leading-relaxed">{m.answer}</p>
-                          </div>
-                        ))}
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Model Responses & Scores</h4>
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {models.map((m, i) => {
+                          const ev = evals.find(e => e.model_name === m.name);
+                          return (
+                            <ModelColumn key={i} name={m.name} answer={m.answer} evaluation={ev} />
+                          );
+                        })}
                       </div>
-                      {resposta.observations && <div className="mt-3"><DetailBlock label="Observations" text={resposta.observations} /></div>}
-                    </div>
-                  )}
-
-                  {evals.length > 0 && (
-                    <div>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Evaluations</h4>
-                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                        {evals.map((ev, i) => (
-                          <div key={i} className="rounded-xl border border-border p-4 bg-muted/20">
-                            <p className="text-xs font-bold mb-3" style={{ color: MODEL_COLORS[ev.model_name] || "#6b7280" }}>{ev.model_name}</p>
-                            <div className="space-y-1.5">
-                              {DIMENSIONS.map(d => (
-                                <div key={d.key} className="flex justify-between text-xs py-0.5">
-                                  <span className="text-muted-foreground">{d.short}</span>
-                                  <span className="font-semibold tabular-nums">{ev[d.key as keyof typeof ev]}/2</span>
-                                </div>
-                              ))}
-                            </div>
-                            <div className="flex justify-between text-sm font-bold border-t border-border mt-3 pt-3">
-                              <span>Total</span>
-                              <span className={ev.total_score_0_10 <= 8 ? "text-warning" : "text-success"}>{ev.total_score_0_10}/10</span>
-                            </div>
-                            {ev.comments && <p className="text-xs text-muted-foreground mt-3 italic leading-relaxed">{ev.comments}</p>}
-                          </div>
-                        ))}
-                      </div>
+                      {resposta?.observations && (
+                        <div className="mt-4 rounded-lg bg-muted/30 border border-border p-4">
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">Observations</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed">{resposta.observations}</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -134,11 +123,64 @@ export default function OpenQuestionsSection() {
   );
 }
 
-function DetailBlock({ label, text }: { label: string; text: string }) {
+function ModelColumn({ name, answer, evaluation }: { name: string; answer: string; evaluation?: AvaliacaoLLM }) {
+  const color = MODEL_COLORS[name] || "hsl(var(--muted-foreground))";
+  const score = evaluation?.total_score_0_10 ?? 0;
+
+  return (
+    <div className="rounded-xl border border-border overflow-hidden bg-card flex flex-col">
+      {/* Model header with colored accent */}
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between" style={{ borderTopWidth: 3, borderTopColor: color }}>
+        <span className="text-sm font-bold" style={{ color }}>{name}</span>
+        {evaluation && (
+          <span
+            className={`text-sm font-bold tabular-nums px-2 py-0.5 rounded-md ${
+              score <= 8 ? "bg-warning/15 text-warning" : "bg-success/15 text-success"
+            }`}
+          >
+            {score}/10
+          </span>
+        )}
+      </div>
+
+      {/* Answer */}
+      <div className="px-4 py-3 flex-1">
+        <p className="text-xs text-foreground/80 whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed scrollbar-hide">{answer}</p>
+      </div>
+
+      {/* Rubric scores */}
+      {evaluation && (
+        <div className="px-4 py-3 border-t border-border bg-muted/20 space-y-2">
+          {DIMENSIONS.map(d => {
+            const val = Number(evaluation[d.key as keyof AvaliacaoLLM]) || 0;
+            return (
+              <div key={d.key} className="flex items-center gap-3 text-xs">
+                <span className="text-muted-foreground w-24 shrink-0 truncate">{d.short}</span>
+                <Progress value={val * 50} className="h-1.5 flex-1" />
+                <span className="font-semibold tabular-nums w-8 text-right text-foreground/80">{val}/2</span>
+              </div>
+            );
+          })}
+          {evaluation.comments && (
+            <>
+              <Separator className="my-2" />
+              <p className="text-xs text-muted-foreground italic leading-relaxed">{evaluation.comments}</p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DetailBlock({ label, text, icon }: { label: string; text: string; icon?: React.ReactNode }) {
   if (!text) return null;
   return (
     <div>
-      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{label}</p>
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+        {icon}
+        {label}
+      </p>
       <p className="text-sm text-foreground/85 whitespace-pre-wrap leading-relaxed">{text}</p>
     </div>
   );
