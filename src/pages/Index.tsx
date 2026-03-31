@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { LayoutDashboard, MessageSquareText, GitCompare, ListChecks, FolderDown, ShieldAlert, Activity } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, GitCompare, ListChecks, FolderDown, ShieldAlert, Activity, AlertTriangle } from "lucide-react";
 import OverviewSection from "@/components/OverviewSection";
+import NotableCasesSection from "@/components/NotableCasesSection";
 import OpenQuestionsSection from "@/components/OpenQuestionsSection";
 import ModelComparisonSection from "@/components/ModelComparisonSection";
 import MCCurationSection from "@/components/MCCurationSection";
