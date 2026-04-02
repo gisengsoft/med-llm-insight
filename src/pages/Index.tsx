@@ -116,7 +116,7 @@ export default function Index() {
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3.5 w-3.5" strokeWidth={1.8} />
             <p className="font-medium">
-              © 2025 Gilson Inácio da Silva — Med LLM Insights
+              © 2026 Gilson Inácio da Silva — Med LLM Insights
             </p>
           </div>
 
