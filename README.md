@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# Welcome to my project Medical LLM Evaluation Explorer
 
-TODO: Document your project here
+TODO: Document my project here
